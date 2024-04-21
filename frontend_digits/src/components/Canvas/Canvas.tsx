@@ -6,6 +6,9 @@ import style from './Canvas.module.css'
 import { ICanvas, IDraw, IPoint } from "@/types/canvas"
 import Button from "@/components/Button/Button"
 
+// const canvas = document.getElementById('mycanvas')
+// const img  = canvas.toDataURL('image/png')
+
 
 export default function Canvas ({ width, height, onClear, ...rest }: ICanvas): React.JSX.Element {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);

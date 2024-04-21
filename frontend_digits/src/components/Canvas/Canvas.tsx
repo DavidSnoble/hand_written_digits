@@ -14,6 +14,7 @@ export default function Canvas ({ width, height, onClear, ...rest }: ICanvas): R
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const prevPointRef = useRef<IPoint | null>(null);
     const isMouseDownRef = useRef<boolean>(false);
+    const [output, setOutput] = useState<null | string>(null);
 
     let x: number = 0;
     const calcRelativePoint = (mouseX: number, mouseY: number): IPoint | undefined => {
@@ -29,7 +30,7 @@ export default function Canvas ({ width, height, onClear, ...rest }: ICanvas): R
     const draw = ({ prevPoint, point, ctx }: IDraw): void => {
         const startingPoint: IPoint = prevPoint ?? point;
         const lineColor: string = '#F2F7F9';
-        const lineWidth: number = 3;
+        const lineWidth: number = 7;
 
         ctx.beginPath();
         ctx.lineWidth = lineWidth;
@@ -75,14 +76,39 @@ export default function Canvas ({ width, height, onClear, ...rest }: ICanvas): R
         if(ctx) ctx.clearRect(0, 0, 1040, 585);
     }
 
+    const handleSend = () => {
+        if(!canvasRef.current) return;
+        const canvas = canvasRef.current;
+        const img  = canvas.toDataURL('image/png')
+        const url = 'http://192.168.103.49:4200/api/digits/';
+        fetch(url, {
+            method: "POST",
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ image: img })
+        })
+        .then(res => {
+            console.log("Res: ", res);
+            return res.json();
+        })
+        .then(data => {
+            console.log("Data: ", data);
+        })
+        .catch(err => {
+            console.log("Error: ", err);
+        })
+    }
+
 
     return (
         <div className={style.container}>
             <canvas 
                 {...rest} 
                 ref={canvasRef} 
-                width={dimensions.width} 
-                height={dimensions.height} 
+                width={800} 
+                height={500} 
                 className={style.canvas}
                 onMouseUp={handleMouseUp}
                 onMouseDown={handleMouseDown}
@@ -90,7 +116,13 @@ export default function Canvas ({ width, height, onClear, ...rest }: ICanvas): R
             />
             <div className={style.actions}>
                 <Button onClick={handleClear}>Clear</Button>
+                <Button onClick={handleSend}>Send</Button>
             </div>
+            {output && (
+                <div className={style.output}>
+                    {output}
+                </div>
+            )}
         </div>
     )
 }

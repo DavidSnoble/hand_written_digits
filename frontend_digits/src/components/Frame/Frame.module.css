@@ -1,0 +1,14 @@
+
+
+
+.frame {
+    height: 100%;
+    margin: 0 auto;
+    padding: 40px 80px;
+    box-sizing: border-box;
+    width: min(1200px, 100%);
+}
+
+@media screen and (max-width: 960px) {
+    .frame { padding: 20px 40px; }
+}
